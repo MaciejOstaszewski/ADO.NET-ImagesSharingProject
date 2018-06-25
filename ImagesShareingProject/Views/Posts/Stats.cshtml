@@ -1,0 +1,24 @@
+﻿@model IEnumerable<ImagesShareingProject.ViewModels.PostsDateGroup>
+@{
+    ViewBag.Title = "Stats";
+}
+
+<h2>Stats</h2>
+
+<table>
+    <tr>
+        <th>Creation Date</th>
+        <th>Posts</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => item.PostCreationDate)
+            </td>
+            <td>
+                @item.PostCount
+            </td>
+        </tr>
+    }
+</table>

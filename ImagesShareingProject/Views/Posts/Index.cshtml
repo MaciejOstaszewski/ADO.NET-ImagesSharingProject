@@ -1,0 +1,130 @@
+﻿@model PagedList.IPagedList<ImagesShareingProject.Models.Post>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+@{
+    ViewBag.Title = "Index";
+}
+
+
+
+<form action="/Posts/Index" method="get">
+    <div class="input-group" style="float: right; padding: 15px;">
+        <input type="text" class="form-control" name="searchFilter" placeholder="Search">
+        <input type="hidden" name="filter" value="3">
+        <input type="hidden" name="active" value="@Request["active"]">
+        <span class="input-group-btn" style="width:0;">
+            <button class="btn btn-warning" type="submit">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+            </button>
+        </span>
+    </div>
+</form>
+
+@if (Request["message"] != null)
+{
+    <h2>@Request["message"]</h2>
+}
+
+@foreach (var item in Model)
+{
+    <div class="row posts">
+
+        <div class="col-lg-6 col-md-offset-3 post">
+            <div>
+                <a class="title" href="@Url.Action("Details", "Posts", new { id = item.ID })">
+                    <span>@Html.DisplayFor(modelItem => item.Title)</span>
+                </a>
+                <div class="comments">
+                    @*   @Html.ActionLink("", "Details", "", new { id = item.ID }, new { @class = "btn btn-info" })*@
+                    <a href="@Url.Action("Details", "Posts", new { id = item.ID })" class="btn btn-info">
+                        <span class="comments-count">@Html.DisplayFor(modelItem => item.Comments.Count)</span>
+                        <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="addons">
+                <a class="category" href="@Url.Action("Index", "Posts", new { id = item.Category.ID, filter = 1, active = item.Active })">
+                    <span>@Html.DisplayFor(modelItem => item.Category.Name)</span>
+                </a>
+                <span class="tags">
+                    @foreach (var tag in item.Tags)
+                    {
+                        <a class="tag" href="@Url.Action("Index", "Posts", new { id = tag.ID, filter = 2, active = item.Active })"><span>#</span>@Html.DisplayFor(modelItem => tag.Name)</a>
+                    }
+                </span>
+            </div>
+            <a href="@Url.Action("Details", "Posts", new { id = item.ID })">
+                <img class="img-responsive" src="~/Images/@item.Image" alt="@Html.DisplayFor(modelItem => item.Title)" />
+            </a>
+            <div class="addons2">
+                <div class="addons2-content">
+                    <a style="text-decoration: none;" href="@Url.Action("Profile", "Posts", new { profileID = item.ProfilID })">
+                        <img style="max-width: 40px; max-height: 40px;" class="img-circle" src="~/Images/@item.Profile.Avatar" alt="@Html.DisplayFor(modelItem => item.Profile.Avatar)" />
+                        <span class="user">@Html.DisplayFor(modelItem => item.Profile.Nick)</span>
+                    </a>
+
+
+
+                    <div class="opinions">
+                        @if (item.Rates.Where(r => r.Profil.UserName == Context.User.Identity.Name).ToList().Count == 0)
+                        {
+                            <a href="@Url.Action("Rate", "Posts", new { id = item.ID, value = 1, returnUrl = Request.Url.AbsoluteUri })" class="btn btn-success">
+                                @Html.DisplayFor(modelItem => item.Rates.Where(r => r.Value > 0).ToList().Count)
+                                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                            </a>
+                            <a href="@Url.Action("Rate", "Posts", new { id = item.ID, value = -1, returnUrl = Request.Url.AbsoluteUri })" class="btn btn-danger">
+                                @Html.DisplayFor(modelItem => item.Rates.Where(r => r.Value < 0).ToList().Count)
+                                <span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-default" style="cursor:default;">
+                                @Html.DisplayFor(modelItem => item.Rates.Where(r => r.Value > 0).ToList().Count)
+                                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                            </a>
+                            <a class="btn btn-default" style="cursor:default;">
+                                @Html.DisplayFor(modelItem => item.Rates.Where(r => r.Value < 0).ToList().Count)
+                                <span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
+                            </a>
+                        }
+
+
+                        @*<button class="btn-success"><span class="op">@Html.DisplayFor(modelItem => item.OpinionsP)</span></button>
+                            <button class="btn-danger"><span class="on">@Html.DisplayFor(modelItem => item.OpinionsN)</span></button>*@
+                    </div>
+                </div>
+            </div>
+            @if (!(item.Active))
+            {
+                if (Context.User.IsInRole("Admin"))
+                {
+                    <div class="post-add">
+                        @*  @Html.ActionLink("Add", "Index", null, new { @class = "btn-block btn-info" })*@
+                        @*<button class="btn-block btn-info">Add</button>*@
+                        <a href="@Url.Action("ActivatePost", "Posts", new { id = item.ID })" class="btn input-block-level form-control btn-info">
+                            Add
+                            <span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
+                        </a>
+                    </div>
+                    <div class="post-add">
+                        @*  @Html.ActionLink("Add", "Index", null, new { @class = "btn-block btn-info" })*@
+                        @*<button class="btn-block btn-info">Add</button>*@
+                        <a href="@Url.Action("Delete", "Posts", new { id = item.ID, returnUrl = Request.Url.AbsoluteUri })" class="btn input-block-level form-control btn-danger">
+                            Delete
+                            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                        </a>
+                    </div>
+                }
+            }
+        </div>
+
+    </div>
+
+}
+
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+@Html.PagedListPager(Model, page => Url.Action("Index", "Posts",
+    new { page, active = Request["active"] }))
+

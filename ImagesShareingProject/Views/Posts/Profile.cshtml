@@ -1,0 +1,31 @@
+﻿@model ImagesShareingProject.ViewModels.ProfliData
+@{
+    ViewBag.Title = "Profile";
+}
+
+<h2>Statistics of user @ViewBag.Profil.Nick</h2>
+<img style="max-width: 120px; max-height: 120px;" class="img-circle" src="~/Images/@ViewBag.Profil.Avatar" alt="@ViewBag.Profil.Avatar)" />
+<table>
+    <tr>
+        <th>Posts</th>
+        <th>Comments</th>
+        <th>Rated Posts</th>
+    </tr>
+
+    <tr>
+        <td>
+            @Html.DisplayFor(model => Model.PostCount)
+        </td>
+        <td>
+            @Html.DisplayFor(model => Model.CommentsCount)
+        </td>
+        <td>
+            @Html.DisplayFor(model => Model.RateCount)
+        </td>
+    </tr>
+
+</table>
+
+<a class="category" href="@Url.Action("Index", "Posts", new { searchFilter =  @ViewBag.Profil.UserName, filter = 4 })">
+    @ViewBag.Profil.Nick Posts
+</a>

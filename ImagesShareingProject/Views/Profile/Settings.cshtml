@@ -1,0 +1,39 @@
+﻿
+@{
+    ViewBag.Title = "Settings";
+}
+
+<h2>Settings</h2>
+
+<a href="@Url.Action("ResetPassword", "Account", new { code = "1" })">
+    Reset Password
+</a>
+<br />
+<h4>Edit Profile.</h4>
+<img style="max-width: 120px; max-height: 120px;" class="img-circle" src="~/Images/@ViewBag.Profil.Avatar" alt="@ViewBag.Profil.Avatar)" />
+
+@using (Html.BeginForm("EditProfile", "Profile", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
+{
+
+    
+    <hr />
+
+    <div class="form-group">
+        <label class="col-md-2 control-label" for="nick">Username</label>
+        <div class="col-md-10">
+            <input id="nick" type="text" name="nick" class="form-control" value="@ViewBag.Profil.Nick" />
+        </div>
+    </div>
+    <div class="form-group" id="disc">
+        <label class="control-label col-md-2" for="DiscImage">Select Avatar</label>
+        <div class="col-md-10">
+            <input id="DiscImage" class="form-control" type="file" name="image" value="" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-default" value="Edit" />
+        </div>
+    </div>
+}

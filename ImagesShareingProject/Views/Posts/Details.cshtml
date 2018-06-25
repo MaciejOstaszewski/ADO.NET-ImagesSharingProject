@@ -1,0 +1,180 @@
+﻿@model ImagesShareingProject.Models.Post
+
+
+@{
+    ViewBag.Title = "Details";
+}
+
+
+
+<div class="row posts">
+
+    <div class="col-lg-6 col-md-offset-3 post">
+        <div>
+
+            <span class="title">@Html.DisplayFor(model => model.Title)</span>
+
+            <div class="comments">
+                <a href="@Url.Action("Details", "Posts", new { id = Model.ID })" class="btn btn-info">
+                    <span class="comments-count">@Html.DisplayFor(modelItem => Model.Comments.Count)</span>
+                    <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+                </a>
+            </div>
+        </div>
+
+        <div class="addons">
+            <a class="category" href="@Url.Action("Index", "Posts", new { id = Model.Category.ID, filter = 1, active = Model.Active })">
+                <span>@Html.DisplayFor(modelItem => Model.Category.Name)</span>
+            </a>
+            <span class="tags">
+                @foreach (var tag in Model.Tags)
+                {
+                    <a class="tag" href="@Url.Action("Index", "Posts", new { id = tag.ID, filter = 2, active = Model.Active })"><span>#</span>@Html.DisplayFor(modelItem => tag.Name)</a>
+                }
+            </span>
+        </div>
+
+        <img class="img-responsive" src="~/Images/@Model.Image" alt="@Html.DisplayFor(model => model.Title)" />
+
+        <div class="addons2">
+            <div class="addons2-content">
+                <a style="text-decoration: none;" href="@Url.Action("Profile", "Posts", new { profileID = Model.ProfilID })">
+                    <img style="max-width: 40px; max-height: 40px;" class="img-circle" src="~/Images/@Model.Profile.Avatar" alt="@Html.DisplayFor(modelItem => Model.Profile.Avatar)" />
+                    <span class="user">@Html.DisplayFor(modelItem => Model.Profile.Nick)</span>
+                </a>
+
+                <div class="opinions">
+                    @if (Model.Rates.Where(r => r.Profil.UserName == Context.User.Identity.Name).ToList().Count == 0)
+                    {
+                        <a href="@Url.Action("RatePositive", "Posts", new { id = Model.ID, returnUrl = Request.Url.AbsoluteUri })" class="btn btn-success">
+                            @Html.DisplayFor(modelItem => Model.Rates.Where(r => r.Value > 0).ToList().Count)
+                            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                        </a>
+                        <a href="@Url.Action("ReteNegative", "Posts", new { id = Model.ID, returnUrl = Request.Url.AbsoluteUri })" class="btn btn-danger">
+                            @Html.DisplayFor(modelItem => Model.Rates.Where(r => r.Value < 0).ToList().Count)
+                            <span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-default" style="cursor:default;">
+                            @Html.DisplayFor(modelItem => Model.Rates.Where(r => r.Value > 0).ToList().Count)
+                            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                        </a>
+                        <a class="btn btn-default" style="cursor:default;">
+                            @Html.DisplayFor(modelItem => Model.Rates.Where(r => r.Value < 0).ToList().Count)
+                            <span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
+                        </a>
+                    }
+
+
+                    @*<button class="btn-success"><span class="op">@Html.DisplayFor(modelItem => item.OpinionsP)</span></button>
+                        <button class="btn-danger"><span class="on">@Html.DisplayFor(modelItem => item.OpinionsN)</span></button>*@
+                </div>
+            </div>
+        </div>
+        @if (!(Model.Active))
+        {
+            if (Context.User.IsInRole("Admin"))
+            {
+                <div class="post-add">
+                    @*  @Html.ActionLink("Add", "Index", null, new { @class = "btn-block btn-info" })*@
+                    @*<button class="btn-block btn-info">Add</button>*@
+                    <a href="@Url.Action("ActivatePost", "Posts", new { id = Model.ID })" class="btn input-block-level form-control btn-info">
+                        Add
+                        <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                    </a>
+                </div>
+                <div class="post-add">
+                    @*  @Html.ActionLink("Add", "Index", null, new { @class = "btn-block btn-info" })*@
+                    @*<button class="btn-block btn-info">Add</button>*@
+                    <a href="@Url.Action("Delete", "Posts", new { id = Model.ID, returnUrl = Request.Url.AbsoluteUri })" class="btn input-block-level form-control btn-danger">
+                        Delete
+                        <span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
+                    </a>
+                </div>
+            }
+        }
+    </div>
+    <div class="col-lg-6 col-md-offset-3 comment">
+        <h2>Comments</h2>
+        <hr />
+        @if (Model.Comments.Count == 0)
+        {
+            <h3>No one commented yet, be first!</h3>
+        }
+        @foreach (var comment in Model.Comments)
+        {
+            if (comment.Reply == null)
+            {
+                <div>
+                    <div class="comment-author">
+                        <span>@Html.DisplayFor(modelItem => comment.Profil.Nick)</span>
+                        <span class="comment-date">@Html.DisplayFor(modelItem => comment.CreationDate)</span>
+                        <span style="color: mediumspringgreen; cursor: pointer" onclick="Reply(@comment.ID);" id="reply" class="comment-date">Reply</span>
+                    </div>
+                    <div class="comment-content"><span class="ccontent">@Html.DisplayFor(modelItem => comment.Contents)</span></div>
+                    <hr />
+                </div>
+                foreach (var reply in comment.Replies)
+                {
+                    <div style="margin-left: 40px;">
+                        <div class="comment-author">
+                            <span>@Html.DisplayFor(modelItem => reply.Profil.Nick)</span>
+                            <span class="comment-date">@Html.DisplayFor(modelItem => reply.CreationDate)</span>
+
+                        </div>
+                        <div class="comment-content"><span class="ccontent">@Html.DisplayFor(modelItem => reply.Contents)</span></div>
+                        <hr />
+                    </div>
+                }
+            }
+        }
+        <h4>Add comment!</h4>
+        <div id="replyMode" style="display: none;">
+            <h4 style="color: aquamarine;">You're in a reply mode</h4>
+            <button class="btn-warning" onclick="Cancel()">Cancel</button>
+        </div>
+        <form action="/Posts/AddComment" method="post">
+            <input name="idp" type="hidden" value="@Html.DisplayFor(model => model.ID)" />
+            <div class="form-group">
+                <textarea id="commentContent" class="form-control" name="comment"></textarea>
+            </div>
+            <input id="replyID" type="hidden" name="reply" value="" />
+            <button class="btn btn-primary" type="submit">Add</button>
+        </form>
+
+    </div>
+    <div class="row">
+        <div class="col-lg-6 col-md-offset-3 back">
+            @if (Model.Active)
+            {
+                <a style="margin-bottom: 10px;" href="@Url.Action("Index", "Posts")" class="btn input-block-level form-control btn-info">
+                    Back to List
+                </a>
+            }
+            else
+            {
+                @Html.ActionLink("Back to List", "Index", "Posts", new { id = UrlParameter.Optional, filter = UrlParameter.Optional, page = UrlParameter.Optional, searchFilter = "", active = false }, new { @class = "btn input-block-level form-control btn-info" })
+            }
+
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+
+    function Reply(id) {
+        document.getElementById('replyMode').style.display = "block";
+        document.getElementById('replyID').value = id;
+    }
+
+    function Cancel() {
+        document.getElementById('replyMode').style.display = "none";
+        document.getElementById('replyID').value = "";
+    }
+
+
+</script>

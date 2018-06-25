@@ -1,0 +1,45 @@
+﻿@model PagedList.IPagedList<ImagesShareingProject.ViewModels.UserNotificationData>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+@{
+    ViewBag.Title = "Notifications";
+}
+
+<h2>Notifications</h2>
+
+@foreach (var item in Model)
+{
+    <div class="row">
+
+        <div class="col-lg-12 col-md-offset-0">
+            <a class="btn btn-primary" style="font-size: 150%; min-width: 100%;" href="@Url.Action("Details", "Posts", new { id = item.PostID })">
+                <span style="padding-left: 20px; float: left;">
+                    @Html.DisplayFor(modelItem => item.EventDate)
+                </span>
+                <span style="padding-left: 40px; float: left;">
+                    User @Html.DisplayFor(modelItem => item.User)
+                </span>
+                @if (item.Action == 1)
+                {
+                    <span style="text-align: center;">Commented your post</span>
+                }
+                else
+                {
+                    <span style="text-align: center;">Rated your post </span>
+                    if (item.Rate > 0)
+                    {
+                        <span>positive </span>
+                    }
+                    else
+                    {
+                        <span>negative </span>
+                    }
+                }
+                <img style="max-width: 60px; max-height: 60px; float: right; margin-left: 20px;" class="img-responsive" src="~/Images/@item.Img" alt="@Html.DisplayFor(modelItem => item.Img)" />
+            </a>
+        </div>
+    </div>
+}
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+@Html.PagedListPager(Model, page => Url.Action("Notifications", "Profile",
+    new { page }))

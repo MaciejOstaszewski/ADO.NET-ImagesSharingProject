@@ -1,0 +1,32 @@
+﻿@using Microsoft.AspNet.Identity
+@*@model IEnumerable<ImagesShareingProject.Models.Profil>*@
+@if (Request.IsAuthenticated)
+{
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+    {
+        @Html.AntiForgeryToken()
+
+<ul class="nav navbar-nav navbar-right">
+    <li>
+        <a href="@Url.Action("Profile", "Posts", new { profileID = @Html.Action("GetUserID", "Posts") })">
+            Wellcome  @Html.Action("GetUser", "Posts")
+        </a>
+        @* @Html.ActionLink("Hello " + @Html.DisplayFor(modelItem => Model.FirstOrDefault(u => u.UserName == User.Identity.GetUserName()).Nick) + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })*@
+        @*@Html.ActionLink("Hello " + @Html.DisplayFor(modelItem => Model.FirstOrDefault(u => u.UserName == User.Identity.GetUserName()).Nick)  + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })*@
+    </li>
+    <li>
+        <a href="@Url.Action("Settings", "Profile")">
+            Settings
+        </a>
+    </li>
+    <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+</ul>
+    }
+}
+else
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+    </ul>
+}

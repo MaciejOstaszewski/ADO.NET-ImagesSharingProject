@@ -1,0 +1,19 @@
+﻿.comment {
+    background-color: #444444;
+    padding-bottom: 10px;
+}
+.comment-author {
+    color: coral;
+    padding: 5px;
+}
+.comment-content {
+    color: lightgray;
+}
+
+.ccontent {
+    margin-left: 10px;
+}
+.comment-date {
+    margin-left: 30px;
+    color: azure;
+}
